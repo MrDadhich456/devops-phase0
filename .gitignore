@@ -1,0 +1,12 @@
+# Python ignores
+venv/
+__pycache__/
+*.pyc
+
+# Output files
+*.json
+*.log
+*.tar.gz
+
+# OS generated files
+.DS_Store
