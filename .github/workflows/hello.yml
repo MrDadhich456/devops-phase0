@@ -6,5 +6,12 @@ jobs:
   say-hello:
     runs-on: ubuntu-latest
     steps:
-     - name: Print message
-       run: echo 'pipeline works!'
+      - name: Print message
+        run: echo 'Pipeline works!'
+
+  say-goodbye:
+    needs: say-hello
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print goodbye
+        run: echo 'The first job finished successfully!'
