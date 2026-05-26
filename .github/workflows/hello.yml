@@ -7,4 +7,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
      - name: Print message
-      run: echo 'pipeline works!'
+       run: echo 'pipeline works!'
