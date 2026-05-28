@@ -3,19 +3,25 @@ name: Automated Tests
 on: [push]
 
 jobs:
-  run-tests:
+run-tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11'] # This loops the job twice!
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         
-      - name: Setup Python 3.11
+      - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python-version }} # Injects the version dynamically
           
       - name: Install dependencies
         run: pip install -r requirements.txt
+        
+      - name: Lint with Flake8
+        run: flake8 . --max-line-length=100
         
       - name: Run Pytest
         run: pytest test_calculator.py -v
