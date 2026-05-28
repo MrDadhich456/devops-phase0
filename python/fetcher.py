@@ -31,14 +31,10 @@ def fetch_posts(user_id):
             with open('posts.json', 'w') as f:
                 json.dump(filtered_data, f, indent=2)
 
-            logging.info(
-                f"Successfully saved {
-                    len(filtered_data)} posts to posts.json")
+            logging.info(f"Successfully saved {len(filtered_data)} posts to posts.json")
 
         else:
-            logging.error(
-                f"API returned bad status code: {
-                    response.status_code}")
+            logging.error(f"API returned bad status code: {response.status_code}")
 
     # Handle network drops and bad URLs gracefully
     except requests.exceptions.ConnectionError:
