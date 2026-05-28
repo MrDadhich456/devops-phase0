@@ -29,3 +29,9 @@ A resilient Python CLI tool that fetches user data from a mock API, filters it, 
 - Bash scripting patterns: functions, loops, conditionals, awk for text parsing
 - Python error handling with requests — graceful failures vs crashes
 - Clean Git workflow: feature branches, rebasing, PRs, no direct pushes to main
+
+
+
+
+
+[![Automate Python Tests](https://github.com/MrDadhich456/devops-phase0/actions/workflows/python-tests.yml/badge.svg)](https://github.com/MrDadhich456/devops-phase0/actions/workflows/python-tests.yml)
