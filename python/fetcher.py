@@ -61,4 +61,3 @@ if __name__ == '__main__':
 
     # Call the function with the argument provided in the terminal
     fetch_posts(args.user_id)
-    
