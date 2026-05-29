@@ -18,13 +18,13 @@ jobs:
           python-version: ${{ matrix.python-version }} # Injects the version dynamically
           
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r phase-2/requirements.txt
         
       - name: Lint with Flake8
         run: flake8 . --max-line-length=100
         
       - name: Run Pytest
-        run: pytest test_calculator.py -v
+        run: pytest phase-2/test_calculator.py -v
 
   build-and-push:
     needs: run-tests
@@ -43,5 +43,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: phase-1/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/calculator:latest
