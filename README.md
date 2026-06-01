@@ -16,7 +16,7 @@
 | Phase 0 | Linux, Bash, Git, Python | ✅ Complete | Bash, Python, Git, Linux |
 | Phase 1 | Docker & Containerisation | ✅ Complete | Docker, docker-compose, Docker Hub |
 | Phase 2 | CI/CD with GitHub Actions | ✅ Complete | GitHub Actions, pytest, flake8 |
-| Phase 3 | AWS Fundamentals | 🔄 In Progress | AWS CLI, EC2, S3, IAM, VPC |
+| Phase 3 | AWS Fundamentals | ✅ Complete | AWS CLI, EC2, S3, IAM, VPC |
 | Phase 4 | Infrastructure as Code | ⏳ Upcoming | Terraform, HCL |
 | Phase 5 | Kubernetes | ⏳ Upcoming | minikube, kubectl, Helm |
 | Phase 6 | Monitoring | ⏳ Upcoming | Prometheus, Grafana, Alertmanager |
@@ -178,7 +178,7 @@ Branch protection is enabled on `main` — no merge without passing CI.
 
 ---
 
-## 🔄 Phase 3 — AWS Fundamentals (In Progress)
+## 🔄 Phase 3 — AWS Fundamentals 
 
 **Goal:** Deploy and manage cloud infrastructure using only the AWS CLI — no console clicking.
 
