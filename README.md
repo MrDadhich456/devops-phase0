@@ -4,7 +4,7 @@
 > Built by **Aaryan Dadhich** | BTech CSE (IoT) @ MLVTEC, Bhilwara
 
 [![CI Pipeline](https://github.com/MrDadhich456/cloud-ops/actions/workflows/python-tests.yml/badge.svg)](https://github.com/MrDadhich456/cloud-ops/actions/workflows/python-tests.yml)
-![Phases Complete](https://img.shields.io/badge/Phases%20Complete-4%2F8-blue)
+![Phases Complete](https://img.shields.io/badge/Phases%20Complete-5%2F8-blue)
 ![Tools](https://img.shields.io/badge/Tools-Bash%20%7C%20Python%20%7C%20Docker%20%7C%20GitHub%20Actions%20%7C%20AWS-informational)
 
 ---
@@ -17,7 +17,7 @@
 | Phase 1 | Docker & Containerisation | ✅ Complete | Docker, docker-compose, Docker Hub |
 | Phase 2 | CI/CD with GitHub Actions | ✅ Complete | GitHub Actions, pytest, flake8 |
 | Phase 3 | AWS Fundamentals | ✅ Complete | AWS CLI, EC2, S3, IAM, VPC |
-| Phase 4 | Infrastructure as Code | ⏳ Upcoming | Terraform, HCL |
+| Phase 4 | Infrastructure as Code | ✅ Complete | Terraform, HCL |
 | Phase 5 | Kubernetes | ⏳ Upcoming | minikube, kubectl, Helm |
 | Phase 6 | Monitoring | ⏳ Upcoming | Prometheus, Grafana, Alertmanager |
 | Phase 7 | Capstone Project | ⏳ Upcoming | All tools — full loop |
@@ -190,25 +190,63 @@ Branch protection is enabled on `main` — no merge without passing CI.
 - Security Groups — port rules, inbound/outbound traffic
 - AWS billing alarms — never get surprised by a bill
 
+
+### Core Competencies & Execution
+- Identity & Access Management (IAM): Enforced principle of least privilege by provisioning dedicated IAM administrative users and securely generating access keys, completely avoiding Root user operations.
+
+- Compute (EC2): Provisioned, configured, and SSH-accessed Ubuntu instances natively from the terminal using cryptographic key pairs (.pem).
+
+- Networking (VPC): Engineered a custom Virtual Private Cloud from scratch, explicitly defining public/private subnets, internet gateways, and custom route tables to ensure network isolation.
+
+- Security & Firewalls: Configured zero-trust Security Groups, explicitly mapping ingress rules for HTTP (80) and SSH (22) while denying all unauthorized traffic.
+
+- Object Storage (S3): Provisioned buckets and utilized the CLI to sync local directories to cloud storage for scalable media hosting.
+
+- FinOps & Cost Management: Implemented an automated AWS CloudWatch + SNS billing alarm system to trigger email alerts the moment infrastructure costs exceed a $1.00 threshold, strictly preventing budget overruns.
 ```bash
-# Setup
+# Identity & Authentication Verification
 aws configure
 aws sts get-caller-identity
 
-# EC2
-aws ec2 run-instances --image-id <ami> --instance-type t2.micro --key-name devops-key
+# Compute Provisioning & Network Attachment
+aws ec2 run-instances --image-id <ami> --instance-type t3.micro --key-name devops-key --security-group-ids <sg-id>
 
-# S3
-aws s3 cp file.txt s3://my-bucket/file.txt
-aws s3 sync ./folder s3://my-bucket/folder/
+# FinOps: Arming the Billing Monitor
+aws cloudwatch put-metric-alarm --alarm-name "Account-Billing-Alarm-1USD" --metric-name EstimatedCharges --namespace AWS/Billing --statistic Maximum --threshold 1 --comparison-operator GreaterThanThreshold --alarm-actions <SNS_TOPIC_ARN>
 ```
 
 ---
 
 ## ⏳ Phase 4 — Terraform (Upcoming)
 
-Everything done manually in Phase 3 — EC2, S3, VPC, security groups — will be reproduced entirely in `.tf` files. Infrastructure as code, version-controlled, and reproducible in seconds.
+**Goal:** Translate manual AWS CLI architecture into version-controlled, declarative HashiCorp Configuration Language (HCL). Built a modular, production-ready environment capable of spinning up a full-stack MERN backend in seconds.
 
+### Core Competencies & Execution
+- Declarative Provisioning: Replaced manual scripting with stateful deployments. Defined VPCs, Security Groups, EC2 instances, and S3 buckets within a centralized .tf configuration.
+
+- Modular Architecture: Abandoned hardcoded monolithic files in favor of a dynamic, reusable file structure (main.tf, variables.tf, outputs.tf).
+
+- Secrets Management: Isolated environment-specific data and sensitive parameters into .tfvars files, strictly excluded from version control via .gitignore to prevent credential leakage.
+
+- Remote State Management: Eliminated local state conflicts by migrating the terraform.tfstate file to a centralized, encrypted AWS S3 backend, enabling seamless multi-developer collaboration and CI/CD integration.
+
+- Infrastructure Lifecycle: Mastered the Terraform workflow to plan dry-runs, apply infrastructure changes safely, and cleanly destroy entire environments to maintain zero-waste cloud usage.
+
+
+```bash
+# Initialize workspace and configure AWS Provider / S3 Backend
+terraform init
+
+# Validate syntax and dry-run infrastructure changes
+terraform fmt
+terraform plan
+
+# Execute deployment and output crucial resource IPs
+terraform apply -var-file="secrets.tfvars"
+
+# Clean teardown of all tracked resources
+terraform destroy
+```
 ---
 
 ## ⏳ Phase 5 — Kubernetes (Upcoming)
