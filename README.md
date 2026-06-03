@@ -4,7 +4,7 @@
 > Built by **Aaryan Dadhich** | BTech CSE (IoT) @ MLVTEC, Bhilwara
 
 [![CI Pipeline](https://github.com/MrDadhich456/cloud-ops/actions/workflows/python-tests.yml/badge.svg)](https://github.com/MrDadhich456/cloud-ops/actions/workflows/python-tests.yml)
-![Phases Complete](https://img.shields.io/badge/Phases%20Complete-3%2F8-blue)
+![Phases Complete](https://img.shields.io/badge/Phases%20Complete-4%2F8-blue)
 ![Tools](https://img.shields.io/badge/Tools-Bash%20%7C%20Python%20%7C%20Docker%20%7C%20GitHub%20Actions%20%7C%20AWS-informational)
 
 ---
