@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        
+        # --- 1. The Resource Cage ---
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m" # 250 millicores (1/4 of a CPU thread)
+          limits:
+            memory: "128Mi"
+            cpu: "500m" # Hard cap at 1/2 of a CPU thread
+            
+        # --- 2. The Doctor Stethoscope ---
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 3
+
+        # --- 3. The Configuration & Secrets Injection ---
+        envFrom:
+        - configMapRef:
+            name: app-config
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: DB_PASSWORD
