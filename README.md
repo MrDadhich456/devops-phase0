@@ -4,8 +4,8 @@
 > Built by **Aaryan Dadhich** | BTech CSE (IoT) @ MLVTEC, Bhilwara
 
 [![CI Pipeline](https://github.com/MrDadhich456/cloud-ops/actions/workflows/python-tests.yml/badge.svg)](https://github.com/MrDadhich456/cloud-ops/actions/workflows/python-tests.yml)
-![Phases Complete](https://img.shields.io/badge/Phases%20Complete-5%2F8-blue)
-![Tools](https://img.shields.io/badge/Tools-Bash%20%7C%20Python%20%7C%20Docker%20%7C%20GitHub%20Actions%20%7C%20AWS-informational)
+![Phases Complete](https://img.shields.io/badge/Phases%20Complete-6%2F8-blue)
+![Tools](https://img.shields.io/badge/Tools-Bash%20%7C%20Python%20%7C%20Docker%20%7C%20GitHub%20Actions%20%7C%20AWS%20%7C%20Terraform%20%7C%20Kubernetes-informational)
 
 ---
 
@@ -18,8 +18,8 @@
 | Phase 2 | CI/CD with GitHub Actions | ✅ Complete | GitHub Actions, pytest, flake8 |
 | Phase 3 | AWS Fundamentals | ✅ Complete | AWS CLI, EC2, S3, IAM, VPC |
 | Phase 4 | Infrastructure as Code | ✅ Complete | Terraform, HCL |
-| Phase 5 | Kubernetes | ⏳ Upcoming | minikube, kubectl, Helm |
-| Phase 6 | Monitoring | ⏳ Upcoming | Prometheus, Grafana, Alertmanager |
+| Phase 5 | Kubernetes | ✅ Complete | minikube, kubectl, Helm |
+| Phase 6 | Monitoring | 🔄 In Progress | Prometheus, Grafana, Alertmanager |
 | Phase 7 | Capstone Project | ⏳ Upcoming | All tools — full loop |
 
 ---
@@ -47,7 +47,22 @@ cloud-ops/
 │   ├── requirements.txt
 │   └── README.md
 │
-├── phase-3/                    # AWS Fundamentals (In Progress)
+├── phase-3/                    # AWS Fundamentals
+│   └── README.md
+│
+├── phase-4/                    # Terraform — Infrastructure as Code
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   └── README.md
+│
+├── phase-5/                    # Kubernetes
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   ├── configmap.yaml
+│   └── README.md
+│
+├── phase-6/                    # Monitoring — Prometheus + Grafana
 │   └── README.md
 │
 ├── .github/
@@ -80,17 +95,11 @@ chmod +x bash/system_monitor.sh
 - Creates timestamped `.tar.gz` archives of a target directory
 - Auto-prunes backups older than 2 minutes to manage disk space
 
-```bash
-chmod +x bash/backup_manager.sh
-./bash/backup_manager.sh
-```
-
 **`python/fetcher.py`** — CLI API data fetcher
 - Fetches posts from a public API with `requests`
 - Filter by `--user-id` argument via `argparse`
 - Full error handling: `ConnectionError`, `Timeout`, invalid inputs
 - Structured logging: INFO / WARNING / ERROR levels
-- Saves filtered results to `posts.json`
 
 ```bash
 cd python
@@ -99,7 +108,7 @@ python fetcher.py --user-id 3
 ```
 
 ### What I learned
-- Linux file permissions (`chmod`), process management (`ps`, `lsof`), and disk inspection (`df`, `du`)
+- Linux file permissions (`chmod`), process management (`ps`, `lsof`), disk inspection (`df`, `du`)
 - Bash scripting: functions, loops, conditionals, `awk` for text parsing
 - Python error handling with `requests` — graceful failures vs crashes
 - `argparse` for CLI tools + Python `logging` module patterns
@@ -120,11 +129,9 @@ python fetcher.py --user-id 3
 - Docker Hub push — image available publicly
 
 ```bash
-# Build and run
 docker build -t cloud-ops:v1 .
 docker run cloud-ops:v1
 
-# Multi-container
 docker-compose up
 docker-compose down -v
 ```
@@ -148,120 +155,199 @@ docker-compose down -v
 git push → flake8 lint → pytest (Python 3.10 + 3.11 matrix) → Docker build + push to Docker Hub
 ```
 
-### What's inside
-
-- `calculator.py` — Python app with `add()`, `subtract()`, `multiply()`
-- `test_calculator.py` — pytest test suite with edge cases
-- `.github/workflows/python-tests.yml` — Full CI/CD pipeline
-
-**Pipeline jobs:**
-1. **lint-and-test** — `flake8` code style check + `pytest` on Python 3.10 AND 3.11 simultaneously
-2. **build-and-push** — Runs only if tests pass. Builds Docker image, tags with `:latest` and commit SHA, pushes to Docker Hub.
+### Pipeline jobs
+1. **lint-and-test** — `flake8` + `pytest` on Python 3.10 AND 3.11 simultaneously
+2. **build-and-push** — runs only if tests pass; builds Docker image, tags with `:latest` and commit SHA, pushes to Docker Hub
 
 ```yaml
-# Triggered on every push to main and all PRs
 on:
   push:
     branches: [main]
   pull_request:
 ```
 
-Branch protection is enabled on `main` — no merge without passing CI.
+Branch protection enabled on `main` — no merge without passing CI.
 
 ### What I learned
-- CI (Continuous Integration) vs CD (Delivery vs Deployment) — the real difference
-- GitHub Actions YAML structure: `workflow → job → step → action`
-- Why `actions/checkout@v3` must be the first step (runner has no code without it)
+- CI vs CD (Delivery vs Deployment) — the real difference
+- GitHub Actions YAML: `workflow → job → step → action`
+- Why `actions/checkout@v3` must be the first step
 - Matrix builds — testing multiple Python versions in parallel
-- GitHub Secrets — storing credentials securely for Docker Hub push
+- GitHub Secrets — storing credentials securely
 - `needs:` keyword — job dependency chains
 
 ---
 
-## 🔄 Phase 3 — AWS Fundamentals 
+## ✅ Phase 3 — AWS Fundamentals
 
-**Goal:** Deploy and manage cloud infrastructure using only the AWS CLI — no console clicking.
+**Goal:** Deploy and manage cloud infrastructure using only the AWS CLI — zero console clicks.
 
-### Topics being covered
-- IAM users, roles, and access keys
-- EC2 — launch, SSH, configure, terminate via CLI
-- S3 — create buckets, upload/download/sync files
-- VPC — custom networks, public/private subnets, internet gateways
-- Security Groups — port rules, inbound/outbound traffic
-- AWS billing alarms — never get surprised by a bill
+### Core Competencies
 
+**Identity & Access Management (IAM):** Enforced least privilege by provisioning dedicated IAM admin users and generating access keys — never touched the root account.
 
-### Core Competencies & Execution
-- Identity & Access Management (IAM): Enforced principle of least privilege by provisioning dedicated IAM administrative users and securely generating access keys, completely avoiding Root user operations.
+**Compute (EC2):** Provisioned, configured, and SSH-accessed instances from the terminal using cryptographic key pairs (`.pem`).
 
-- Compute (EC2): Provisioned, configured, and SSH-accessed Ubuntu instances natively from the terminal using cryptographic key pairs (.pem).
+**Networking (VPC):** Engineered a custom VPC from scratch — public/private subnets, internet gateways, and custom route tables for network isolation.
 
-- Networking (VPC): Engineered a custom Virtual Private Cloud from scratch, explicitly defining public/private subnets, internet gateways, and custom route tables to ensure network isolation.
+**Security Groups:** Configured zero-trust ingress rules for HTTP (80) and SSH (22) — all other traffic denied.
 
-- Security & Firewalls: Configured zero-trust Security Groups, explicitly mapping ingress rules for HTTP (80) and SSH (22) while denying all unauthorized traffic.
+**Object Storage (S3):** Provisioned buckets and synced local directories to cloud storage via CLI.
 
-- Object Storage (S3): Provisioned buckets and utilized the CLI to sync local directories to cloud storage for scalable media hosting.
+**FinOps:** Implemented CloudWatch + SNS billing alarm — email alert triggered when costs exceed $1.00.
 
-- FinOps & Cost Management: Implemented an automated AWS CloudWatch + SNS billing alarm system to trigger email alerts the moment infrastructure costs exceed a $1.00 threshold, strictly preventing budget overruns.
 ```bash
-# Identity & Authentication Verification
+# Identity verification
 aws configure
 aws sts get-caller-identity
 
-# Compute Provisioning & Network Attachment
-aws ec2 run-instances --image-id <ami> --instance-type t3.micro --key-name devops-key --security-group-ids <sg-id>
+# Launch EC2
+aws ec2 run-instances --image-id <ami> --instance-type t3.micro \
+  --key-name devops-key --security-group-ids <sg-id>
 
-# FinOps: Arming the Billing Monitor
-aws cloudwatch put-metric-alarm --alarm-name "Account-Billing-Alarm-1USD" --metric-name EstimatedCharges --namespace AWS/Billing --statistic Maximum --threshold 1 --comparison-operator GreaterThanThreshold --alarm-actions <SNS_TOPIC_ARN>
+# Billing alarm
+aws cloudwatch put-metric-alarm --alarm-name "Billing-1USD" \
+  --metric-name EstimatedCharges --namespace AWS/Billing \
+  --statistic Maximum --threshold 1 \
+  --comparison-operator GreaterThanThreshold \
+  --alarm-actions <SNS_TOPIC_ARN>
 ```
+
+### What I learned
+- IAM is AWS security rule #1 — never use root for daily work
+- Public subnet = route to internet gateway. Private subnet = no internet route
+- CLI-first approach forces understanding of every parameter
+- Always terminate resources — t2.micro costs money even idle
 
 ---
 
-## ⏳ Phase 4 — Terraform (Upcoming)
+## ✅ Phase 4 — Infrastructure as Code — Terraform
 
-**Goal:** Translate manual AWS CLI architecture into version-controlled, declarative HashiCorp Configuration Language (HCL). Built a modular, production-ready environment capable of spinning up a full-stack MERN backend in seconds.
+**Goal:** Translate manual AWS CLI architecture into version-controlled, declarative HCL.
 
-### Core Competencies & Execution
-- Declarative Provisioning: Replaced manual scripting with stateful deployments. Defined VPCs, Security Groups, EC2 instances, and S3 buckets within a centralized .tf configuration.
+### Core Competencies
 
-- Modular Architecture: Abandoned hardcoded monolithic files in favor of a dynamic, reusable file structure (main.tf, variables.tf, outputs.tf).
+**Declarative Provisioning:** Replaced manual scripting with stateful deployments — VPCs, Security Groups, EC2, and S3 defined in centralized `.tf` configuration.
 
-- Secrets Management: Isolated environment-specific data and sensitive parameters into .tfvars files, strictly excluded from version control via .gitignore to prevent credential leakage.
+**Modular Architecture:** Dynamic, reusable file structure: `main.tf`, `variables.tf`, `outputs.tf` — no hardcoded values.
 
-- Remote State Management: Eliminated local state conflicts by migrating the terraform.tfstate file to a centralized, encrypted AWS S3 backend, enabling seamless multi-developer collaboration and CI/CD integration.
+**Secrets Management:** Isolated sensitive parameters into `.tfvars` files excluded from version control via `.gitignore`.
 
-- Infrastructure Lifecycle: Mastered the Terraform workflow to plan dry-runs, apply infrastructure changes safely, and cleanly destroy entire environments to maintain zero-waste cloud usage.
+**Remote State:** Migrated `terraform.tfstate` to a centralized, encrypted AWS S3 backend — enabling multi-developer collaboration and CI/CD integration.
 
+**Infrastructure Lifecycle:** Full Terraform workflow — plan dry-runs, safe applies, and clean destroys for zero-waste cloud usage.
 
 ```bash
-# Initialize workspace and configure AWS Provider / S3 Backend
+# Initialize workspace and S3 backend
 terraform init
 
-# Validate syntax and dry-run infrastructure changes
+# Validate and dry-run
 terraform fmt
 terraform plan
 
-# Execute deployment and output crucial resource IPs
+# Deploy
 terraform apply -var-file="secrets.tfvars"
 
-# Clean teardown of all tracked resources
+# Clean teardown
 terraform destroy
 ```
----
 
-## ⏳ Phase 5 — Kubernetes (Upcoming)
-
-Deploy the containerised app from Phase 1 on a local Kubernetes cluster. Rolling updates, self-healing, ConfigMaps, Secrets, resource limits, health probes.
-
----
-
-## ⏳ Phase 6 — Monitoring (Upcoming)
-
-Set up Prometheus + Grafana on the K8s cluster. Custom dashboards for CPU/memory/pod status. Alertmanager rules that fire on real conditions.
+### What I learned
+- Terraform state is the brain — never manually edit `.tfstate`
+- `terraform plan` shows drift between desired and actual state
+- `terraform refresh` syncs state with reality after manual AWS changes
+- Remote state in S3 is essential for team workflows
+- Variables + outputs make configs reusable and safe
 
 ---
 
-## ⏳ Phase 7 — Capstone Project (Upcoming)
+## ✅ Phase 5 — Kubernetes
+
+**Goal:** Deploy containerised applications on a Kubernetes cluster with self-healing, rolling updates, and proper resource management.
+
+### Core Competencies
+
+**Cluster Setup:** Provisioned a local single-node cluster using minikube. Configured `kubectl` for cluster interaction.
+
+**Workloads:** Deployed applications using Deployments with 3 replicas. Validated self-healing — deleted pods restart automatically via ReplicaSet controller.
+
+**Networking:** Exposed applications using Services (ClusterIP, NodePort). Understood label selectors for pod targeting.
+
+**Configuration Management:** Injected non-sensitive config via ConfigMaps and sensitive data via Secrets as environment variables — never hardcoded in images.
+
+**Rolling Updates & Rollbacks:** Updated deployments to new image versions with zero downtime. Simulated failed deployments and executed instant rollbacks.
+
+**Resource Management:** Set CPU/memory `requests` and `limits`. Configured liveness and readiness probes for production-grade health checking.
+
+**Namespaces:** Organised cluster workloads into `dev` and `staging` namespaces for environment isolation.
+
+```bash
+# Start cluster
+minikube start
+
+# Deploy application
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+
+# Monitor
+kubectl get pods -w
+kubectl describe pod <name>
+kubectl logs <name>
+
+# Rolling update
+kubectl set image deployment/my-app my-app=image:v2
+kubectl rollout status deployment/my-app
+
+# Rollback
+kubectl rollout undo deployment/my-app
+
+# Scale
+kubectl scale deployment my-app --replicas=5
+
+# Access app
+minikube service my-app-svc --url
+```
+
+### What I learned
+- Pod vs Deployment — never run bare pods in production
+- ReplicaSet controller maintains desired replica count automatically (self-healing)
+- Services provide stable network identity — pods have dynamic IPs
+- ConfigMaps for config, Secrets for sensitive data — never hardcode in images
+- Rolling updates replace pods one at a time — zero downtime deployments
+- Resource limits prevent one app from starving others on the cluster
+- Liveness probe = restart on failure. Readiness probe = remove from Service on failure
+
+---
+
+## 🔄 Phase 6 — Monitoring — Prometheus + Grafana
+
+**Goal:** Set up full observability for the Kubernetes cluster — metrics, dashboards, and alerting.
+
+### Topics being covered
+- Prometheus scraping — pull-based metrics collection from `/metrics` endpoints
+- PromQL — querying time-series data (CPU, memory, request rates)
+- Grafana dashboards — visualising cluster health (CPU, memory, pod status)
+- Alertmanager — routing alerts to Slack/email when thresholds are exceeded
+- Custom metrics — exposing app-level metrics via `prometheus_client`
+
+```bash
+# Install via Helm
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm install prometheus prometheus-community/kube-prometheus-stack \
+  -n monitoring --create-namespace
+
+# Access Prometheus UI
+kubectl port-forward -n monitoring \
+  svc/prometheus-kube-prometheus-prometheus 9090:9090
+
+# Access Grafana
+kubectl port-forward -n monitoring \
+  svc/prometheus-grafana 3000:80
+```
+
+---
+
+## ⏳ Phase 7 — Capstone Project
 
 **The full loop — everything connects:**
 
@@ -286,10 +372,10 @@ Languages:        Python, Bash
 Version Control:  Git, GitHub
 Containerisation: Docker, Docker Compose
 CI/CD:            GitHub Actions
-Cloud:            AWS (EC2, S3, IAM, VPC)          ← in progress
-IaC:              Terraform                          ← upcoming
-Orchestration:    Kubernetes (kubectl, minikube)    ← upcoming
-Monitoring:       Prometheus, Grafana               ← upcoming
+Cloud:            AWS (EC2, S3, IAM, VPC)
+IaC:              Terraform
+Orchestration:    Kubernetes (kubectl, minikube, Helm)
+Monitoring:       Prometheus, Grafana          ← in progress
 OS:               Linux (Ubuntu)
 ```
 
@@ -300,7 +386,7 @@ OS:               Linux (Ubuntu)
 **Aaryan Dadhich** — 2nd year BTech CSE (IoT) @ MLVTEC, Bhilwara
 
 - 🐙 GitHub: [MrDadhich456](https://github.com/MrDadhich456)
-- 💼 LinkedIn: [linkedin.com/in/MrDadhich456](https://www.linkedin.com/in/aaryan-dadhich-9ba736213/)
+- 💼 LinkedIn: [linkedin.com/in/MrDadhich456](https://www.linkedin.com/in/MrDadhich456)
 - 📧 Email: aaryandadhich2006@gmail.com
 
 > This repo is a live document — updated as each phase is completed.
