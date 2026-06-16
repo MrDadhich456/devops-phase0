@@ -1,11 +1,11 @@
 # ☁️ cloud-ops — DevOps & Cloud Engineering Roadmap
 
-> A complete, hands-on DevOps learning journey — from Linux fundamentals to a fully automated cloud-deployed pipeline.
+> A complete, hands-on DevOps learning journey — from Linux fundamentals to a fully automated, production-grade IoT platform deployed on Kubernetes.
 > Built by **Aaryan Dadhich** | BTech CSE (IoT) @ MLVTEC, Bhilwara
 
 [![CI Pipeline](https://github.com/MrDadhich456/cloud-ops/actions/workflows/python-tests.yml/badge.svg)](https://github.com/MrDadhich456/cloud-ops/actions/workflows/python-tests.yml)
-![Phases Complete](https://img.shields.io/badge/Phases%20Complete-6%2F8-blue)
-![Tools](https://img.shields.io/badge/Tools-Bash%20%7C%20Python%20%7C%20Docker%20%7C%20GitHub%20Actions%20%7C%20AWS%20%7C%20Terraform%20%7C%20Kubernetes-informational)
+![Phases Complete](https://img.shields.io/badge/Phases%20Complete-8%2F8-brightgreen)
+![Tools](https://img.shields.io/badge/Tools-Bash%20%7C%20Python%20%7C%20Docker%20%7C%20GitHub%20Actions%20%7C%20AWS%20%7C%20Terraform%20%7C%20Kubernetes%20%7C%20Prometheus%20%7C%20Grafana-informational)
 
 ---
 
@@ -19,8 +19,8 @@
 | Phase 3 | AWS Fundamentals | ✅ Complete | AWS CLI, EC2, S3, IAM, VPC |
 | Phase 4 | Infrastructure as Code | ✅ Complete | Terraform, HCL |
 | Phase 5 | Kubernetes | ✅ Complete | minikube, kubectl, Helm |
-| Phase 6 | Monitoring | 🔄 In Progress | Prometheus, Grafana, Alertmanager |
-| Phase 7 | Capstone Project | ⏳ Upcoming | All tools — full loop |
+| Phase 6 | Monitoring | ✅ Complete | Prometheus, Grafana, Alertmanager |
+| Phase 7 | Capstone — NexusIoT | ✅ Complete | MQTT, Kafka, SHAP, FastAPI, K8s |
 
 ---
 
@@ -63,6 +63,10 @@ cloud-ops/
 │   └── README.md
 │
 ├── phase-6/                    # Monitoring — Prometheus + Grafana
+│   ├── alert-rules.yaml
+│   └── README.md
+│
+├── phase-7/                    # Capstone — NexusIoT Platform
 │   └── README.md
 │
 ├── .github/
@@ -319,16 +323,21 @@ minikube service my-app-svc --url
 
 ---
 
-## 🔄 Phase 6 — Monitoring — Prometheus + Grafana
+## ✅ Phase 6 — Monitoring — Prometheus + Grafana
 
-**Goal:** Set up full observability for the Kubernetes cluster — metrics, dashboards, and alerting.
+**Goal:** Full observability for the Kubernetes cluster — metrics collection, dashboards, and automated alerting.
 
-### Topics being covered
-- Prometheus scraping — pull-based metrics collection from `/metrics` endpoints
-- PromQL — querying time-series data (CPU, memory, request rates)
-- Grafana dashboards — visualising cluster health (CPU, memory, pod status)
-- Alertmanager — routing alerts to Slack/email when thresholds are exceeded
-- Custom metrics — exposing app-level metrics via `prometheus_client`
+### Core Competencies
+
+**Stack Deployment:** Installed the full `kube-prometheus-stack` via Helm — Prometheus, Grafana, and Alertmanager deployed as a single chart in a dedicated `monitoring` namespace.
+
+**PromQL Queries:** Wrote and executed production-grade queries — CPU usage rates, per-pod memory consumption, container resource utilisation, and pod status tracking.
+
+**Grafana Dashboards:** Built custom dashboards with 3+ panels (CPU time series, memory gauges, pod status stats). Imported community dashboards (ID `3119`) for cluster-wide visibility.
+
+**Alert Rules:** Authored `PrometheusRule` CRDs to fire alerts when CPU usage exceeds thresholds for sustained periods. Validated alerting by stress-testing pods.
+
+**Architecture Understanding:** Prometheus scrapes `/metrics` endpoints (pull-based). Alertmanager handles routing, deduplication, and silencing. Grafana is the visualisation layer.
 
 ```bash
 # Install via Helm
@@ -343,13 +352,68 @@ kubectl port-forward -n monitoring \
 # Access Grafana
 kubectl port-forward -n monitoring \
   svc/prometheus-grafana 3000:80
+
+# Apply custom alert rules
+kubectl apply -f alert-rules.yaml -n monitoring
+
+# Stress test to trigger alerts
+kubectl run stress --image=progrium/stress -- --cpu 2
 ```
+
+### Key PromQL queries used
+
+```promql
+# Target health
+up
+
+# CPU usage rate (5 min window)
+rate(node_cpu_seconds_total{mode="idle"}[5m])
+
+# Container CPU usage by pod
+sum(rate(container_cpu_usage_seconds_total{namespace="default"}[5m])) by (pod)
+
+# Memory usage by pod (in MB)
+sum(container_memory_usage_bytes{namespace="default"}) by (pod) / 1048576
+```
+
+### Monitoring architecture
+
+```
+App pods ──── /metrics endpoint
+                    │
+                    ▼ (scrape every 15s)
+              Prometheus
+                    │
+          ┌─────────┴─────────┐
+          │                   │
+       Grafana           Alertmanager
+    (dashboards)        (routes alerts)
+                              │
+                    ┌─────────┴─────────┐
+                  Slack              Email
+```
+
+### What I learned
+- Prometheus is pull-based — it scrapes `/metrics` endpoints, apps don't push
+- Metric types: Counter (only up), Gauge (up/down), Histogram (distribution)
+- PromQL `rate()` function calculates per-second rate over a time window
+- Grafana is just a visualisation layer — Prometheus is the data source
+- Alertmanager handles routing, deduplication, and silencing — separate from Prometheus
+- Pending → Firing: alert must breach threshold for `for:` duration before firing
 
 ---
 
-## ⏳ Phase 7 — Capstone Project
+## ✅ Phase 7 — Capstone Project — NexusIoT
 
-**The full loop — everything connects:**
+**Goal:** Bring every skill together — build a production-grade industrial IoT platform from scratch.
+
+### 🏭 What I built
+
+**NexusIoT** — A production-grade industrial IoT telemetry platform with real-time streaming, explainable anomaly detection, and full Kubernetes orchestration.
+
+🔗 **Full Project Repository:** [github.com/MrDadhich456/NexusIoT](https://github.com/MrDadhich456/NexusIoT)
+
+### End-to-end pipeline
 
 ```
 git push
@@ -361,7 +425,44 @@ git push
   → Grafana dashboard shows it's healthy
 ```
 
-One repo. One push. Fully automated from code to monitored production.
+### Tech stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **IoT Protocol** | MQTT (Mosquitto) | Device-to-cloud messaging with QoS-1 |
+| **Message Bus** | Apache Kafka | Durable, replayable event streaming |
+| **Database** | TimescaleDB | Time-series optimised PostgreSQL |
+| **API** | FastAPI + WebSocket | REST endpoints + real-time live streams |
+| **ML/XAI** | SHAP + IsolationForest | Explainable anomaly detection |
+| **Orchestration** | Kubernetes (minikube) | Container orchestration |
+| **IaC** | Terraform | AWS infrastructure as code |
+| **CI/CD** | GitHub Actions | Automated lint → test → build → deploy |
+| **Monitoring** | Prometheus + Grafana | Metrics, dashboards, alerting |
+
+### Architecture
+
+```
+Devices (MQTT) → Mosquitto → Kafka → Stream Processor → TimescaleDB
+                                          ↓                    ↓
+                                    SHAP Explainer      FastAPI + WebSocket
+                                          ↓                    ↓
+                                    Anomaly Alerts      Live Dashboard
+```
+
+### Key differentiator
+
+Unlike typical IoT projects that just collect data, NexusIoT tells you **why** an anomaly was flagged — _"spindle RPM drove 68% of this anomaly"_ — using SHAP explainability stored as JSONB alongside every alert.
+
+### What I learned
+- **MQTT protocol** — how IoT devices communicate with QoS guarantees
+- **Kafka as a message bus** — decoupling producers from consumers, replay capability
+- **TimescaleDB hypertables** — time-series partitioning for fast range queries
+- **WebSocket streaming** — real-time data push from Kafka to browser (<50ms)
+- **SHAP explainability** — making ML models interpretable (why was this flagged?)
+- **Kubernetes manifests** — Deployments, StatefulSets, Services, HPA, PVCs
+- **Terraform provisioning** — EC2 + security groups + IAM as code
+- **CI/CD pipelines** — multi-stage GitHub Actions with Docker Hub + SSH deploy
+- **Prometheus custom metrics** — instrumenting application code for observability
 
 ---
 
@@ -375,7 +476,11 @@ CI/CD:            GitHub Actions
 Cloud:            AWS (EC2, S3, IAM, VPC)
 IaC:              Terraform
 Orchestration:    Kubernetes (kubectl, minikube, Helm)
-Monitoring:       Prometheus, Grafana          ← in progress
+Monitoring:       Prometheus, Grafana, Alertmanager
+IoT:              MQTT (Mosquitto), Apache Kafka
+ML/XAI:           SHAP, IsolationForest
+API:              FastAPI, WebSocket
+Database:         TimescaleDB (PostgreSQL)
 OS:               Linux (Ubuntu)
 ```
 
@@ -389,5 +494,5 @@ OS:               Linux (Ubuntu)
 - 💼 LinkedIn: [linkedin.com/in/MrDadhich456](https://www.linkedin.com/in/MrDadhich456)
 - 📧 Email: aaryandadhich2006@gmail.com
 
-> This repo is a live document — updated as each phase is completed.
-> Star it if you're following along. ⭐
+> 🎉 All 8 phases complete — from `chmod +x` to a production IoT platform on Kubernetes.
+> Star it if you found it useful. ⭐
